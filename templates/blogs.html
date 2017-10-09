@@ -1,0 +1,15 @@
+{%extends "base.html"%}
+
+{%block content%}
+
+<form action="/blogs" method="post">
+    {%for blog in blogs%}
+        <div>
+            <a href="./blogs?id={{blog.id}}"><h2>{{blog.title}}</h2></a>
+            <p>{{blog.content}}</p>
+        </div>
+        <hr/>
+    {%endfor%}
+</form>
+
+{%endblock%}

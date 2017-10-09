@@ -1,0 +1,23 @@
+{%extends "base.html"%}
+
+{%block content%}
+
+<form action='/newBlog' id="blogInput" method="post">
+    <div>
+        <h1>Post Title:</h1>
+        <input type="text" name="titleInput" value="{{title}}" />
+        {%if error1%}
+            <p class='error1'>Invalid title. Please enter title text</p>
+        {%endif%}
+    </div>
+    <div>
+        <h1>Post Content:</h1>        
+        <textarea name="newBlogPost" form="blogInput">{{content}}</textarea>
+        {%if error2%}
+            <p class='error2'>Invalid post. Please include body text</p>
+        {%endif%}
+    </div>
+    <input type="submit" name"Submit" />
+</form>
+
+{%endblock%}
