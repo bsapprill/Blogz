@@ -1,0 +1,28 @@
+{%extends 'base.html'%}
+
+{%block content%}
+<form action="/signup" method='post'>
+    <div>
+        <h1>Username:</h1>
+        {%if error1%}
+            <p class='error1'>Invalid username</p>
+        {%endif%}
+        <input type="text" name="username" />
+    </div>
+    <div>
+        <h1>Password:</h1>
+        {%if error2%}
+            <p class='error2'>Invalid password</p>
+        {%endif%}
+        <input type="password" name="password" />
+    </div>
+    <div>
+        <h1>Verify Password:</h1>
+        {%if error3%}
+            <p class='error3'>Passwords did not match</p>
+        {%endif%}
+        <input type="password" name="passwordVerify" />
+        </div>
+    <input type="submit" name="Submit"/>
+</form>
+{%endblock%}

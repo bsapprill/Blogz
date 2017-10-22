@@ -1,0 +1,26 @@
+{%extends 'base.html'%}
+
+{%block content%}
+
+<form action="/login" method="post">
+    <div>
+        <h1>Username:</h1>
+        {%if error1%}
+            <p class='error1'>Username does not exist</p>
+        {%endif%}
+        <input type="text" name="username" />
+    </div>
+    <div>
+        <h1>Password:</h1>
+        {%if error2%}
+            <p class='error2'>Incorrect password</p>
+        {%endif%}
+        <input type="password" name="password" />       
+    </div>
+    <input type="submit" name="Submit"/>
+</form>
+<form action="/signup" method="get">
+    <input type="submit" name"CreateAccount" value="Create Account" />
+</form>
+
+{%endblock%}
