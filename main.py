@@ -16,7 +16,7 @@ class BlogPost(db.Model):
     content = db.Column(db.String(1000))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self,name,content, owner):
+    def __init__(self,name,content,owner):
         self.title = name
         self.content = content
         self.owner = owner
@@ -31,14 +31,25 @@ class User(db.Model):
         self.username = username
         self.password = password
 
+@app.before_request
+def require_login():
+    allowed_routes=['login','displayBlog','index','signup']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect('/login')
+
 @app.route('/blogs', methods=['POST', 'GET'])
 def displayBlog():
-    if not request.args.get('id'):
-        blogs = BlogPost.query.all()
-        return render_template('blogs.html', blogs=blogs)
-    else:
+    users = User.query.all()
+    if request.args.get('id'):
+        print("blog id is here")
         blog = BlogPost.query.filter_by(id=request.args.get('id')).first()
-        return render_template('blogView.html.', blog=blog)
+        return render_template('blogView.html.', blog=blog, users=users)
+    elif request.args.get('user'):
+        blogs = BlogPost.query.filter_by(owner_id=request.args.get('user'))
+        return render_template('singleUser.html',blogs=blogs, users=users)
+    else:
+        blogs = BlogPost.query.all()
+        return render_template('blogs.html', blogs=blogs, users=users)
 
 @app.route('/newBlog', methods=['POST', 'GET'])
 def newBlogPost():
@@ -76,23 +87,31 @@ def signup():
         password = request.form['password']
         passwordCheck = request.form['passwordVerify']
 
-        validUsernameBool = True
-        validPasswordBool = True
-        validVerifyBool = True
+        invalidUsernameBool = False
+        invalidPasswordBool = False
+        invalidVerifyBool = False
+        usernameExists = False
+
+        usernameCheck = User.query.filter_by(username=username).first()
 
         if username == "" or not validInputString(username):
-            validUsernameBool = False
+            invalidUsernameBool = True
 
         if password == "" or not validInputString(password):
-            validPasswordBool = False
+            invalidPasswordBool = True
 
         if passwordCheck != password or passwordCheck == "":
-            validVerifyBool = False
+            invalidVerifyBool = True
 
-        if not validUsernameBool or not validPasswordBool or not validVerifyBool:
-            return render_template("signup.html", error1 = validUsernameBool,                                                    
-                                                  error2 = validPasswordBool, 
-                                                  error3 = validVerifyBool)
+        if usernameCheck:
+            if usernameCheck.username == username:
+                usernameExists = True
+
+        if invalidUsernameBool or invalidPasswordBool or invalidVerifyBool or usernameExists:
+            return render_template("signup.html", error1 = invalidUsernameBool,                                                    
+                                                  error2 = invalidPasswordBool, 
+                                                  error3 = invalidVerifyBool,
+                                                  error4 = usernameExists)
         else:
             session['username']=username
 
@@ -129,15 +148,17 @@ def login():
 
 #@app.route('/index')
 
-@app.route('/logout', methods=['POST'])
+@app.route('/logout', methods=['POST', 'GET'])
 def logout():
-    #delete username
-    del session['email']
-    return redirect('/blogs')
+    if session['username'] != None:
+        del session['username']
+        return redirect('/login')
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-    return redirect('/login')
+    users = User.query.all()
+
+    return render_template('index.html', users=users)
 
 def validInputString(inputString):
     stringLength = len(inputString)

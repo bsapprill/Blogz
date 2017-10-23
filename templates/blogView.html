@@ -2,7 +2,8 @@
 
 {%block content%}
 
-<h1>{{blog.title}}</h1>
-<p>{{blog.content}}</p>
+    <h1>{{blog.title}}</h1>
+    <p>{{blog.content}}</p>
+    <a href="./blogs?user={{blog.owner_id}}">{{users[blog.owner_id-1].username}}</a>
 
 {%endblock%}
